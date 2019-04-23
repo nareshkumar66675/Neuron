@@ -1,9 +1,7 @@
 from random import seed
 from random import randrange
 from random import random
-from csv import reader
 from math import exp
-
 
 
 class NeuralNet(object):
@@ -17,6 +15,8 @@ class NeuralNet(object):
         self.layers = list()
 
         randomSeed = 30
+
+        #Construct Hidden Layer
         for x in range(0,hiddenLayerCount):
             seed(randomSeed)
             randomSeed+hiddenLayerCount
@@ -39,7 +39,7 @@ class NeuralNet(object):
         return output * (1.0 - output)
 
 
-
+    # Calculate Accuracy
     def calculateAccuracy(self, actual, predicted):
         correct = 0
         for i in range(len(actual)):
