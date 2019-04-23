@@ -8,6 +8,7 @@ It is a Neural Network Architecture which uses **Forward Backward Propagation**
   - Given a Data Set, the architecture finds the best *learning rate, epoch values and number of hidden layers needed*
   - It uses Forward Backward Propagation.
   - The activation function used is sigmoid.
+  - Based on the selected parameters, the data is classified and the prediction rate is further analyzed.
 
 # Dataset Used
 - Car Evaluation : https://archive.ics.uci.edu/ml/datasets/car+evaluation
