@@ -1,4 +1,4 @@
-# ExpMaxML
+# Neuron
 
 It is a Neural Network Architecture which uses **Forward Backward Propagation**
 
