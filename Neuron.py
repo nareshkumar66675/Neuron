@@ -7,7 +7,10 @@ from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from collections import defaultdict
 from NeuralArch.NeuralNet import *
+import seaborn as sns;
+sns.set()
 
+import matplotlib.pylab as plt
 
 
 
@@ -19,7 +22,7 @@ def GetMushroomData():
 
     # Reorder Decision Attribute for consistency
     mushroomDF = rawDF.iloc[:,1:]
-    mushroomDF.loc[:,len(encodedDF.columns)] = rawDF.iloc[:,0]
+    mushroomDF.loc[:,len(rawDF.columns)] = rawDF.iloc[:,0]
 
     return mushroomDF
 
@@ -32,6 +35,87 @@ def GetCarData():
     #mushroomDF.loc[:,len(encodedDF.columns)] = rawDF.iloc[:,0]
 
     return rawDF
+
+def GetLearningRate(selectedDF,X_train,X_test,y_test ):
+    # return 0.3
+    lRateAccuracy = {}
+    for lRate in range(1,10):
+            net = NeuralNet(len(selectedDF.columns)-1,len(selectedDF.columns)-1,1,len(selectedDF.iloc[:,-1].unique()))
+
+            model = net.trainModel(X_train.values,lRate/10,20)
+
+            pred = net.testModel(X_test.values, model)
+
+            accuracy = net.calculateAccuracy(y_test.values,pred)
+
+            print("For Learning Rate : {0} the Prediction Rate is {1}%".format(lRate/10,"{0:.2f}".format(accuracy)))
+
+            lRateAccuracy[lRate/10] = accuracy
+
+    lists = sorted(lRateAccuracy.items()) # sorted by key, return a list of tuples
+
+    x, y = zip(*lists) # unpack a list of pairs into two tuples
+
+    #plt.plot(x, y)
+
+    sns.lineplot(x=x, y=y)
+    plt.show()
+
+    return max(lRateAccuracy, key=lRateAccuracy.get)
+
+def GetOptimalEpoch(selectedDF,X_train,X_test,y_test,lRate ):
+
+    #return 9
+    epochAccuracy = {}
+    for epoch in range(3,20):
+            net = NeuralNet(len(selectedDF.columns)-1,len(selectedDF.columns)-1,1,len(selectedDF.iloc[:,-1].unique()))
+
+            model = net.trainModel(X_train.values,lRate,epoch)
+
+            pred = net.testModel(X_test.values, model)
+
+            accuracy = net.calculateAccuracy(y_test.values,pred)
+
+            print("For Epoch : {0} the Prediction Rate is {1}%".format(epoch,"{0:.2f}".format(accuracy)))
+
+            epochAccuracy[epoch] = accuracy
+
+    lists = sorted(epochAccuracy.items()) # sorted by key, return a list of tuples
+
+    x, y = zip(*lists) # unpack a list of pairs into two tuples
+
+    #plt.plot(x, y)
+
+    sns.lineplot(x=x, y=y)
+    plt.show()
+
+    return max(epochAccuracy, key=epochAccuracy.get)
+
+def GetOptimalHiddenLayers(selectedDF,X_train,X_test,y_test,lRate,epoch ):
+    hiddenLayerAccuracy = {}
+    for hiddenLayer in range(1,6):
+            net = NeuralNet(len(selectedDF.columns)-1,len(selectedDF.columns)-1,hiddenLayer,len(selectedDF.iloc[:,-1].unique()))
+
+            model = net.trainModel(X_train.values,lRate,epoch)
+
+            pred = net.testModel(X_test.values, model)
+
+            accuracy = net.calculateAccuracy(y_test.values,pred)
+
+            print("For Optimal Layer Count : {0} the Prediction Rate is {1}%".format(hiddenLayer,"{0:.2f}".format(accuracy)))
+
+            hiddenLayerAccuracy[hiddenLayer] = accuracy
+
+    lists = sorted(hiddenLayerAccuracy.items()) # sorted by key, return a list of tuples
+
+    x, y = zip(*lists) # unpack a list of pairs into two tuples
+
+    #plt.plot(x, y)
+
+    sns.lineplot(x=x, y=y)
+    plt.show()
+
+    return max(hiddenLayerAccuracy, key=hiddenLayerAccuracy.get)
 
 while True:
     print("Select DataSet")
@@ -75,17 +159,55 @@ while True:
     X_test.loc[:,len(selectedDF.columns)] = y_test
 
 
-    net = NeuralNet(len(selectedDF.columns)-1,10,1,len(selectedDF.iloc[:,-1].unique()))
+    #net = NeuralNet(len(selectedDF.columns)-1,10,1,len(selectedDF.iloc[:,-1].unique()))
 
-    model = net.trainModel(X_train.values,0.3,20)
+    #model = net.trainModel(X_train.values,0.3,20)
 
-    pred = net.testModel(X_test.values, model)
+    #pred = net.testModel(X_test.values, model)
 
-    accuracy = net.calculateAccuracy(y_test.values,pred)
+    #accuracy = net.calculateAccuracy(y_test.values,pred)
 
-    print("Prediction Rate '{0}'".format("{0:.2f}".format(accuracy)))
+    #print("Prediction Rate '{0}'".format("{0:.2f}".format(accuracy)))
 
-    print("Prediction Rate" + accuracy)
+    #print("Prediction Rate" + accuracy)
+
+    #lRateAccuracy = {}
+    #for lRate in range(1,10):
+    #        net = NeuralNet(len(selectedDF.columns)-1,10,1,len(selectedDF.iloc[:,-1].unique()))
+
+    #        model = net.trainModel(X_train.values,lRate/10,20)
+
+    #        pred = net.testModel(X_test.values, model)
+
+    #        accuracy = net.calculateAccuracy(y_test.values,pred)
+
+    #        lRateAccuracy[lRate/10] = accuracy
+
+    #lists = sorted(lRateAccuracy.items()) # sorted by key, return a list of tuples
+
+    #x, y = zip(*lists) # unpack a list of pairs into two tuples
+
+    ##plt.plot(x, y)
+
+    #sns.lineplot(x=x, y=y)
+    #plt.show()
+
+    #for i in lRateAccuracy:
+    #    print(i, lRateAccuracy[i])
+    print("Finding Best Optimal Learning Rate")
+    optimalLearningRate = GetLearningRate(selectedDF,X_train, X_test,y_test )
+    print("Optimal Learning Rate '{0}'".format(optimalLearningRate))
+
+
+    print("Finding Best Epoch Value")
+    epochValue = GetOptimalEpoch(selectedDF,X_train, X_test,y_test,optimalLearningRate )
+    print("Optimal Epoch Value '{0}'".format(epochValue))
+
+    print("Finding Optimal no of Hidden layers")
+    hiddenLayerCount = GetOptimalHiddenLayers(selectedDF,X_train, X_test,y_test,optimalLearningRate,epochValue )
+    print("Optimal Hidden Layer Count '{0}'".format(hiddenLayerCount))
+    
+
 
 print("End")
 
