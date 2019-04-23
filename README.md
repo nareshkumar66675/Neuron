@@ -17,7 +17,7 @@ It is a Neural Network Architecture which uses **Forward Backward Propagation**
 
 
 # Neural Structure
-This is a sample neural structure with 6 inputs, 6 neurons with 1 hidden layer and 4 output.
+This is the neural structure for **Car Dataset** with 6 inputs, 6 neurons with 1 hidden layer and 4 output. The Prediction Rate was **92.13%**
 
 ![](https://raw.githubusercontent.com/nareshkumar66675/Neuron/master/Charts/NNViz.png)
 
